@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+/* Main colours */
+:root{
+  --safe: #10b981;
+  --caution: #f59e0b;
+  --danger: #ef4444;
+  --primary: #059669;
+  --secondary: #6366f1;
+  --background: #f9fafb;
+  --surface: #ffffff;
+  --text: #1f2937;
+  --textLight: #6b7280;
+  --border: #e5e7eb;
+}
+
+.card {
+  background: linear-gradient(135deg, #059669 0%, #6366f1 100%);
+  box-shadow: 0 10px 30px rgba(5, 150, 105, 0.3);
+}
+
+button{
+  cursor: pointer;
+}
