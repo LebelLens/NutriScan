@@ -1,0 +1,41 @@
+import { Star, User } from 'lucide-react'
+import { Mail, Lock } from 'lucide-react';
+import React from 'react'
+import { FcGoogle } from "react-icons/fc";
+import { useNavigate } from 'react-router-dom';
+
+const Signup = () => {
+    const navigate = useNavigate()
+    return (
+        <div className='w-screen md:w-[50vw] flex flex-col gap-3 items-center justify-center md:p-10 p-4 md:rounded-2xl md:m-auto md:my-4 bg-(--background)'>
+            <div className='card flex items-center justify-center h-20 w-20 rounded-2xl text-white'><Star size={40} /></div>
+            <h1 className='text-4xl font-bold'>Create Account</h1>
+            <p className='text-gray-700'>Start your journey to healthier eating</p>
+            <form className='flex w-full flex-col gap-4 mt-5' action="">
+                <label className=''>Full Name</label>
+                <div className='bg-white border border-(--border) flex gap-2 p-3 rounded-xl'>
+                    <User className='text-gray-400' />
+                    <input className='outline-0' type="email" id='email' placeholder='Enter your full name' />
+                </div>
+                <label>Email</label>
+                <div className='bg-white border border-(--border) flex gap-2 p-3 rounded-xl'>
+                    <Mail className='text-gray-400' />
+                    <input className='outline-0' type="email" id='email' placeholder='Enter your email' />
+                </div>
+                <label htmlFor="">Password</label>
+                <div className='bg-white border border-(--border) flex gap-2 p-3 rounded-xl'>
+                    <Lock className='text-gray-400' />
+                    <input className='outline-0' type="password" id='password' placeholder='At least 8 characters' />
+                </div>
+            </form>
+            <div className='flex gap-2'>
+                <input type="checkbox" name="" id="check" />
+                <label className='text-sm' htmlFor="check">I agree to the <button className='text-(--primary)'>Terms of Service</button> and <button className='text-(--primary)'>Privacy Policy</button></label>
+            </div>
+            <button className='card mt-3 text-white p-3 rounded-xl w-full'>Create Account</button>
+            <span className='text-sm'>Already have an account? <button onClick={() => navigate("/login")} className='text-(--primary)'>Sign In</button></span>
+        </div>
+    )
+}
+
+export default Signup
