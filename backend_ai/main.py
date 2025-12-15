@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -5,6 +6,8 @@ import requests
 import os
 from dotenv import load_dotenv
 import openai
+import json
+
 
 load_dotenv()
 
@@ -56,16 +59,19 @@ async def analyze_product(req: ScanRequest):
 
     # 3) Call Azure OpenAI for AI explanation
     try:
-        ai_explanation = await call_azure_openai(ingredients, user_health)
+        ai_explanation = await call_azure_openai(
+            ingredients,
+            user_health,
+            product_name
+)
+
     except Exception as e:
         ai_explanation = f"AI call failed: {e}"
 
     return {
-        "product_name": product_name,
-        "ingredients": ingredients,
-        "harmful_simple": harmful_simple,
-        "ai_explanation": ai_explanation
-    }
+        "analysis": ai_explanation
+}
+
 
 # Simple health check logic
 def check_harm(ingredients, user_health):
@@ -86,24 +92,64 @@ def check_harm(ingredients, user_health):
     return output
 
 # Call Azure OpenAI with new SDK
-async def call_azure_openai(ingredients, user_health):
+async def call_azure_openai(ingredients, user_health, product_name):
     prompt = f"""
-User health profile: {user_health}
+You are a food safety and nutrition AI assistant.
 
-Ingredients in the product:
+User health profile:
+{json.dumps(user_health, indent=2)}
+
+Product name:
+{product_name}
+
+Ingredients:
 {ingredients}
 
-Provide a structured summary of potentially harmful ingredients for this user and explain why.
+TASK:
+Analyze this product for the user and return a STRICT JSON response
+with the following exact structure:
+
+{{
+  "verdict": "avoid | caution | safe",
+  "riskLevel": "low | medium | high",
+  "productName": "{product_name}",
+  "summary": "Short 1–2 sentence explanation",
+  "flaggedIngredients": [
+    {{
+      "name": "ingredient name",
+      "risk": "low | medium | high",
+      "reason": "why it is harmful",
+      "affectedCondition": "which health condition it affects",
+      "simpleExplanation": "explain like talking to a non-technical person",
+      "alternatives": ["healthier alternatives"]
+    }}
+  ],
+  "alternatives": ["overall healthier product suggestions"]
+}}
+
+RULES:
+- Output ONLY valid JSON
+- No markdown
+- No explanations outside JSON
+- If product is harmful, verdict must be "avoid"
+- Be honest and health-focused
 """
 
     response = openai.chat.completions.create(
-        model=DEPLOYMENT_NAME,  # Use model instead of engine
+        model=DEPLOYMENT_NAME,
         messages=[
-            {"role": "system", "content": "You are a nutrition risk expert."},
-            {"role": "user", "content": prompt}
+            {
+                "role": "system",
+                "content": "You are a strict JSON-only API. Never add extra text."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
         ],
-        max_tokens=300,
-        temperature=0.3
+        temperature=0.2,
+        max_tokens=700
     )
 
-    return response.choices[0].message.content
+    return json.loads(response.choices[0].message.content)
+
