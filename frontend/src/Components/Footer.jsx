@@ -7,7 +7,7 @@ const Footer = (props) => {
     return (
         <div className='fixed bottom-0 left-0 right-0 w-full px-4 py-5 flex justify-around backdrop-blur-lg z-50'>
             {/* Colour is selected according to props*/}
-            <div onClick={()=>{navigate("/")}} className={`flex flex-col items-center ${props.open=='home'?'text-(--safe)':''}`}>
+            <div onClick={()=>{navigate("/home")}} className={`flex flex-col items-center ${props.open=='home'?'text-(--safe)':''}`}>
                 <Camera className='cursor-pointer'/>
                 <p>Scan</p>
             </div>

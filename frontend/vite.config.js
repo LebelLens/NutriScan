@@ -34,4 +34,7 @@ export default defineConfig({
       type: 'module',
     },
   })],
+  server: {
+    port: 3000,
+  },
 })

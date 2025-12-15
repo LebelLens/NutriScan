@@ -1,8 +1,10 @@
 import React from 'react'
 import { Camera, XCircle } from 'lucide-react'
 import '../index.css'
+import { useNavigate } from 'react-router-dom'
 
 const Scan = () => {
+    const navigate = useNavigate()
     return (
         <div className='md:w-[50vw] p-4 rounded-2xl m-auto my-24 border border-(--border) bg-(--background) shadow-[0_10px_30px_rgba(5, 150, 105, 0.3)]'>
             {/* QR section */}
@@ -12,7 +14,7 @@ const Scan = () => {
                 <div className='rounded-full bg-white/40 p-5'><Camera className='text-lg text-white' /></div>
                 <h1 className='text-white text-2xl font-semibold'>Scan a product</h1>
                 <p className='text-xs text-white'>Point your camera at ingredients list</p>
-                <button className='p-5 bg-(--background) text-lg text-(--primary) rounded-2xl font-medium shadow-[0_4px_12px_rgba(0,0,0,0.1)]'>Start Scanning</button>
+                <button onClick={()=>navigate("/scan")} className='p-5 bg-(--background) text-lg text-(--primary) rounded-2xl font-medium shadow-[0_4px_12px_rgba(0,0,0,0.1)]'>Start Scanning</button>
             </div>
             {/* Scanned details */}
             <div className='flex justify-between gap-3 mt-5'>
