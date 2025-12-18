@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Heart, Check, AlertCircle, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { saveUserProfile } from '../Services/db';
+import toast from 'react-hot-toast';
 
 const Onboarding = () => {
     const navigate=useNavigate();
@@ -28,6 +30,7 @@ const Onboarding = () => {
         { id: 'shellfish', name: 'Shellfish', icon: '🦐' }
     ];
 
+    // handling conditions
     const toggleCondition = (id) => {
         let newConditions = [];
         if (selectedCondition.includes(id)) {
@@ -40,6 +43,7 @@ const Onboarding = () => {
         setSelectedCondition(newConditions);
     }
 
+    // handling allergies
     const toggleAllergies = (id) => {
         let newAllergies = [];
         if (selectedAllergies.includes(id)) {
@@ -50,6 +54,22 @@ const Onboarding = () => {
         console.log(newAllergies);
 
         setSelectedAllergies(newAllergies);
+    }
+
+    // saving user profile to IndexedDB
+    const handleScanning = async()=>{
+        try {
+            await saveUserProfile({
+                name: "Abhik",
+                email: "abhikmudi6@gmail.com",
+                conditions: selectedCondition,
+                allergies: selectedAllergies,
+            })
+            toast.success("Profile saved")
+            navigate("/home")
+        } catch (error) {
+           toast.error("Error to save in profile", error) 
+        }
     }
 
     const Onboarding1 = () => {
@@ -172,7 +192,7 @@ const Onboarding = () => {
                 <p className='text-(--textLight)'>Your health information is encrypted and never shared with third parties.</p>
             </div>
 
-            <button onClick={()=>navigate("/home")} className='card p-5 rounded-2xl text-white'>Start Scanning</button>
+            <button onClick={handleScanning} className='card p-5 rounded-2xl text-white'>Start Scanning</button>
             <p className='text-center text-(--textLight) text-xs'>You can change your profile anytime in settings</p>
         </div>
     }

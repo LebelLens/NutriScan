@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Share2, Heart, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
-import { saveScan } from '../services/db';
+import { getFavorites, saveScan } from '../Services/db';
 import toast from 'react-hot-toast';
 
 const Results = () => {
@@ -80,6 +80,7 @@ const Results = () => {
   const config = verdictConfig[analysis.verdict];
   const VerdictIcon = config.icon;
 
+  // saving scan to history in IndexedDB
   const handleSaveToHistory = async () => {
     try {
       await saveScan({
@@ -95,6 +96,7 @@ const Results = () => {
     }
   };
 
+  // opens the modal for ingredients
   const openIngredientModal = (ingredient) => {
     setSelectedIngredient(ingredient);
     setShowModal(true);
