@@ -9,7 +9,14 @@ router.post("/signup", async (req, res) => {
     const { name, email, password } = req.body;
     try {
         const existingUser = await User.findOne({ email });
-        if(existingUser) return res.status(400).json({ message: "User already exists" });
+        if(existingUser){
+            if (existingUser.googleId && !existingUser.password) {
+          return res.status(400).json({
+          message: "Account exists via Google. Please set a password instead."
+           });
+          }
+          return res.status(400).json({ message: "User already exists" });
+        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await User.create({ name, email, password: hashedPassword });
@@ -35,6 +42,17 @@ router.post("/login", (req, res, next) => {
         });
     })(req, res, next);
 });
+//Google login
+router.get('/auth/google',passport.authenticate('google', { scope: ['profile','email'] }));
+
+//Google callback
+router.get(
+  '/auth/google/callback',
+  passport.authenticate('google', {
+    successRedirect: '/home',
+    failureRedirect: '/login',
+  })
+);
 
 // Logout
 router.post("/logout", (req, res) => {
@@ -45,7 +63,7 @@ router.post("/logout", (req, res) => {
 });
 
 // Check if logged in
-router.get("/me", (req, res) => {
+router.get("/profile", (req, res) => {
     if(req.isAuthenticated()) {
         res.json({ id: req.user._id, name: req.user.name, email: req.user.email });
     } else {

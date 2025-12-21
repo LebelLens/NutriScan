@@ -6,14 +6,21 @@ const ensureAuthenticated = require("../middleware/auth.js");
 // Save health data (POST /api/health)
 router.post("/api/health", ensureAuthenticated, async (req, res) => {
     const { age, weight, height, bloodPressure, diabetes } = req.body;
+    // Validate arrays are provided
+    if (!Array.isArray(healthCondition) || healthCondition.length === 0) {
+        return res.status(400).json({ message: "healthCondition array is required and cannot be empty" });
+    }
+    if (!Array.isArray(allergy) || allergy.length === 0) {
+        return res.status(400).json({ message: "allergy array is required and cannot be empty" });
+    }
     try {
         const data = await HealthData.create({
             user: req.user._id, // from Passport session
             age,
             weight,
             height,
-            bloodPressure,
-            diabetes
+            healthCondtion,
+            allergy
         });
         res.status(201).json(data);
     } catch (err) {
