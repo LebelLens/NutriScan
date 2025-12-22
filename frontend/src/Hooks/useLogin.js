@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useAuthContext } from '../Context/authContext'
 
+const apiUrl = import.meta.env.API_URL || "http://localhost:5000"
+
+
 const useLogin = () => {
     const {setAuthUser}=useAuthContext()
     const [isLoading, setisLoading] = useState(false)
@@ -10,7 +13,7 @@ const useLogin = () => {
     const LoginUser = async ({ email, password }) => {
         setisLoading(true);
         try {
-            const res = await fetch("/api/auth/login", {
+            const res = await fetch(`${apiUrl}/api/users/login`, {
                 method: 'POST',
                 headers: { 'content-type': 'application/json' },
                 body: JSON.stringify({ email, password }),
@@ -19,10 +22,13 @@ const useLogin = () => {
             if (data.error) {
                 throw new Error(data.error)
             }
-            localStorage.setItem("NutriScan", JSON.stringify(data))
-            setAuthUser(data);
+            if(data.success){
+                localStorage.setItem("NutriScan", JSON.stringify(data.user))
+                setAuthUser(data.user);
+            }
+            else throw new Error(data.message)
         } catch (error) {
-            toast.error("Error while login", error)
+            toast.error(error.message)
         } finally {
             setisLoading(false)
         }

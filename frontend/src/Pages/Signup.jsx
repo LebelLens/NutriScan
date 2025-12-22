@@ -9,21 +9,22 @@ import toast from 'react-hot-toast';
 const Signup = () => {
     const navigate = useNavigate()
     const {isLoading, signupUser}=useSignup()
-    const [fullName, setFullName] = useState("")
+    const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [isChecked, setIsChecked] = useState(false)
 
     const handleSubmit=async(e)=>{
         e.preventDefault()
-        if(!fullName || !email || !password) return toast.error("You must fill all the fields")
+        if(!name || !email || !password) return toast.error("You must fill all the fields")
         if(!isChecked){
             return toast.error("You must agree to our Terms of Service and Privacy Policy")
         }
-        await signupUser({fullName, email, password})
+        await signupUser({name, email, password})
         setEmail("")
-        setFullName("")
+        setName("")
         setPassword("")
+        navigate("/onboarding")
     }
     return (
         <div className='w-screen md:w-[50vw] flex flex-col gap-3 items-center justify-center md:p-10 p-4 md:rounded-2xl md:m-auto md:my-4 bg-(--background)'>
@@ -34,7 +35,7 @@ const Signup = () => {
                 <label className=''>Full Name</label>
                 <div className='bg-white border border-(--border) flex gap-2 p-3 rounded-xl'>
                     <User className='text-gray-400' />
-                    <input value={fullName} onChange={(e)=>setFullName(e.target.value)} className='outline-0' type="text" id='fullName' placeholder='Enter your full name' />
+                    <input value={name} onChange={(e)=>setName(e.target.value)} className='outline-0' type="text" id='name' placeholder='Enter your full name' />
                 </div>
                 <label>Email</label>
                 <div className='bg-white border border-(--border) flex gap-2 p-3 rounded-xl'>

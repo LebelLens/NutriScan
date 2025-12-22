@@ -11,6 +11,7 @@ export const useAuthContext = ()=>{
 // authProvider component
 export const AuthProvider = ({children})=>{
     const [authUser, setAuthUser] = useState(JSON.parse(localStorage.getItem("NutriScan")) || null);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(false)
 
-    return <AuthContext.Provider value={{authUser, setAuthUser}}>{children}</AuthContext.Provider>
+    return <AuthContext.Provider value={{authUser, setAuthUser, isCheckingAuth, setIsCheckingAuth}}>{children}</AuthContext.Provider>
 }

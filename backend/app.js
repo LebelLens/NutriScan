@@ -12,7 +12,7 @@ app.use(session({
     saveUninitialized: false
 }))
 //Middleware
-app.use(cors({ origin: "http://localhost:5000", credentials: true }))
+app.use(cors({ origin: ["http://localhost:5000", "http://localhost:3000"], credentials: true }))
 app.use("/api/health", require("./user/healthroute"));
 app.use(express.json());
 app.use(session({

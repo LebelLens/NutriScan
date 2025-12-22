@@ -1,10 +1,12 @@
 import { Heart } from 'lucide-react'
 import { Mail, Lock } from 'lucide-react';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from 'react-router-dom';
 import useLogin from '../Hooks/useLogin';
 import toast from 'react-hot-toast';
+
+const apiUrl = import.meta.env.API_URL || "http://localhost:5000"
 
 const Login = () => {
     const navigate = useNavigate()
@@ -12,9 +14,10 @@ const Login = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
-    const handleSubmit = async(e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if(!email || !password){
+        if (!email || !password) {
             return toast.error("Please fill all the fields")
         }
         await LoginUser({ email, password });
@@ -22,12 +25,16 @@ const Login = () => {
         setPassword("")
     }
 
+    const handleLoginGoogle = () => {
+        window.location.href = `${apiUrl}/api/users/auth/google`
+    }
+
     return (
         <div className='w-screen md:w-[50vw] flex flex-col gap-3 items-center justify-center md:p-10 p-4 md:rounded-2xl md:m-auto md:my-4 bg-(--background)'>
             <div className='card flex items-center justify-center h-20 w-20 rounded-2xl text-white'><Heart size={40} /></div>
             <h1 className='text-4xl font-bold'>Welcome back</h1>
             <p className='text-gray-700'>Sign in to continue your health journey</p>
-            <button className='flex items-center gap-2 rounded-2xl bg-white p-3 w-[80%] justify-center'><FcGoogle />Continue with Google</button>
+            <button onClick={handleLoginGoogle} className='flex items-center gap-2 rounded-2xl bg-white hover:bg-linear-to-br from-[#059669] to-[#6366f1] hover:text-white p-3 w-[80%] justify-center'><FcGoogle />Continue with Google</button>
             <div className='flex gap-3 w-full items-center justify-center'>
                 <hr className='text-gray-400 w-[40%] bg-gray-700' />
                 <span>OR</span>

@@ -13,6 +13,13 @@ module.exports = function(passport) {
             const user = await User.findOne({ email });
             if(!user) return done(null, false, { message: "No user found" });
 
+            if (!user.password) {
+              return done(null, false, { 
+                success: false,
+                message: "This account uses Google Login. Please use Google to sign in." 
+              });
+            }
+
             const isMatch = await bcrypt.compare(password, user.password);
             if(!isMatch) return done(null, false, { message: "Password incorrect" });
 
