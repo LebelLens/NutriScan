@@ -12,7 +12,6 @@ const healthDataSchema = new mongoose.Schema({
     },
     allergy:{
         type:[{type:String}],
-        required:true,
         validate:[arr=>arr.length>0,"Atleast one health condition is required"]
     }
 }, { timestamps: true });

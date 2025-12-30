@@ -1,41 +1,51 @@
 const express = require("express");
 const router = express.Router();
-const HealthData = require("../models/healthdata.js");
-const ensureAuthenticated = require("../middleware/auth.js");
+const HealthData = require("../models/healthdata");
+const ensureAuthenticated = require("../middleware/auth");
 
-// Save health data (POST /api/health)
-router.post("/api/health", ensureAuthenticated, async (req, res) => {
-    const { age, weight, height, bloodPressure, diabetes } = req.body;
-    // Validate arrays are provided
+// POST /api/health → Save health data
+router.post("/", ensureAuthenticated, async (req, res) => {
+  try {
+    const {
+      age,
+      weight,
+      height,
+      healthCondition,
+      allergy
+    } = req.body;
+
     if (!Array.isArray(healthCondition) || healthCondition.length === 0) {
-        return res.status(400).json({ message: "healthCondition array is required and cannot be empty" });
+      return res.status(400).json({ message: "healthCondition is required" });
     }
+
     if (!Array.isArray(allergy) || allergy.length === 0) {
-        return res.status(400).json({ message: "allergy array is required and cannot be empty" });
+      return res.status(400).json({ message: "allergy is required" });
     }
-    try {
-        const data = await HealthData.create({
-            user: req.user._id, // from Passport session
-            age,
-            weight,
-            height,
-            healthCondtion,
-            allergy
-        });
-        res.status(201).json(data);
-    } catch (err) {
-        res.status(500).json({ message: "Server error" });
-    }
+
+    const healthData = await HealthData.create({
+      user: req.user._id,
+      age,
+      weight,
+      height,
+      healthCondition,
+      allergy
+    });
+
+    res.status(201).json(healthData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
-// Get logged-in user's health data (GET /api/health)
-router.get("/api/user", ensureAuthenticated, async (req, res) => {
-    try {
-        const data = await HealthData.find({ user: req.user._id });
-        res.json(data);
-    } catch (err) {
-        res.status(500).json({ message: "Server error" });
-    }
+// GET /api/health → Get logged-in user's health data
+router.get("/", ensureAuthenticated, async (req, res) => {
+  try {
+    const data = await HealthData.find({ user: req.user._id });
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 module.exports = router;

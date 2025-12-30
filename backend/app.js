@@ -37,3 +37,7 @@ app.use("/api/users", require("./user/routes.js"));
  app.listen(port,()=>{
     console.log("Server is listening");
  })
+//Scan Routes 
+app.use("/api/scan", require("./user/scan.js"));
+//Ingredient Routes
+app.use("/api/ingredients", require("./user/ingredient.js"));
