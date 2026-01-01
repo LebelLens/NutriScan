@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const HealthData = require("../models/healthdata");
-const ensureAuthenticated = require("../middleware/auth");
+const HealthData = require("../models/healthdata.js");
+const ensureAuthenticated = require("../middleware/auth.js");
 
 // POST /api/health → Save health data
 router.post("/", ensureAuthenticated, async (req, res) => {
@@ -13,14 +13,6 @@ router.post("/", ensureAuthenticated, async (req, res) => {
       healthCondition,
       allergy
     } = req.body;
-
-    if (!Array.isArray(healthCondition) || healthCondition.length === 0) {
-      return res.status(400).json({ message: "healthCondition is required" });
-    }
-
-    if (!Array.isArray(allergy) || allergy.length === 0) {
-      return res.status(400).json({ message: "allergy is required" });
-    }
 
     const healthData = await HealthData.create({
       user: req.user._id,
@@ -48,4 +40,15 @@ router.get("/", ensureAuthenticated, async (req, res) => {
   }
 });
 
+// Update health data of user
+router.put("/", ensureAuthenticated, async (req, res)=>{
+  try {
+    const {healthCondition, allergy}=req.body;
+    const data= await HealthData.findOneAndUpdate({user: req.user._id}, {healthCondition, allergy}, {new: true})
+    res.json(data);
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({message: "Internal Server Error"})
+  }
+})
 module.exports = router;

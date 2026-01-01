@@ -3,9 +3,12 @@ import { Heart, Check, AlertCircle, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { saveUserProfile } from '../Services/db';
 import toast from 'react-hot-toast';
+import {useSaveUserProfile} from '../hooks/useUserProfile';
 
 const Onboarding = () => {
     const navigate=useNavigate();
+
+    const {isLoading, saveToIndexedDB, saveToDB}=useSaveUserProfile()
     
     const [currentScreen, setCurrentScreen] = useState('onboarding1');
     const [selectedCondition, setSelectedCondition] = useState([])
@@ -56,17 +59,18 @@ const Onboarding = () => {
         setSelectedAllergies(newAllergies);
     }
 
-    // saving user profile to IndexedDB
+    // saving user profile to Databases
     const handleScanning = async()=>{
         try {
-            await saveUserProfile({
-                name: "Abhik",
-                email: "abhikmudi6@gmail.com",
-                conditions: selectedCondition,
-                allergies: selectedAllergies,
-            })
-            toast.success("Profile saved")
-            navigate("/home")
+            // save to IndexedDB
+            await saveToIndexedDB(selectedCondition, selectedAllergies)
+
+            // save to db   
+            await saveToDB(selectedCondition, selectedAllergies)
+            if(!isLoading){
+                toast.success("Profile saved")
+                navigate("/home")
+            }
         } catch (error) {
            toast.error("Error to save in profile", error) 
         }

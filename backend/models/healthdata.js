@@ -5,14 +5,11 @@ const healthDataSchema = new mongoose.Schema({
     age: Number,
     weight: Number,
     height: Number,
-    healthconditon:{
+    healthCondition:{
         type:[{type:String}],
-        required:true,
-        validate:[arr=>arr.length>0,"Atleast one health condition is required"]
     },
     allergy:{
         type:[{type:String}],
-        validate:[arr=>arr.length>0,"Atleast one health condition is required"]
     }
 }, { timestamps: true });
 

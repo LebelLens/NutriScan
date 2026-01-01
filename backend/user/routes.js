@@ -50,7 +50,7 @@ router.get('/auth/google',passport.authenticate('google', { scope: ['profile','e
 router.get(
   '/auth/google/callback',
   passport.authenticate('google', {
-    successRedirect: 'http://localhost:3000/home',
+    successRedirect: 'http://localhost:3000/onboarding',
     failureRedirect: 'http://localhost:3000/login',
   })
 );
