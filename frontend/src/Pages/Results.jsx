@@ -9,46 +9,8 @@ const Results = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [selectedIngredient, setSelectedIngredient] = useState(null);
-
-  // Mock data
-  const [analysis, setAnalysis] = useState({
-    verdict: 'avoid',
-    riskLevel: 'high',
-    productName: 'Lay\'s Chips',
-    summary: 'This product contains 3 ingredients that are harmful for your diabetes and may cause blood sugar spikes.',
-    flaggedIngredients: [
-      {
-        name: 'High Fructose Corn Syrup',
-        risk: 'high',
-        reason: 'Causes rapid blood sugar spikes',
-        affectedCondition: 'Diabetes',
-        simpleExplanation: 'A cheap sweetener made from corn. It\'s sweeter than regular sugar and your body processes it differently, causing faster blood sugar spikes.',
-        alternatives: ['Stevia', 'Honey', 'Dates']
-      },
-      {
-        name: 'Sodium (520mg)',
-        risk: 'medium',
-        reason: 'High sodium can raise blood pressure',
-        affectedCondition: 'Hypertension',
-        simpleExplanation: 'Salt helps preserve food, but too much can increase water retention and blood pressure.',
-        alternatives: ['Low-sodium alternatives', 'Unsalted nuts']
-      },
-      {
-        name: 'MSG (Monosodium Glutamate)',
-        risk: 'medium',
-        reason: 'May trigger headaches and allergic reactions',
-        affectedCondition: 'General Health',
-        simpleExplanation: 'A flavor enhancer that makes food taste better. Some people are sensitive to it.',
-        alternatives: ['Natural herbs', 'Spices']
-      }
-    ],
-    alternatives: [
-      'Baked chips with no added sugar',
-      'Vegetable chips (check ingredients)',
-      'Air-popped popcorn',
-      'Roasted chickpeas'
-    ]
-  });
+  
+  const [analysis, setAnalysis] = useState(location.state.analysis)
 
   const verdictConfig = {
     safe: {
@@ -121,9 +83,6 @@ const Results = () => {
         {/* Product Info */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center">
-              <span className="text-3xl">🥔</span>
-            </div>
             <div className="flex-1">
               <h2 className="text-xl font-bold text-gray-900">{analysis.productName}</h2>
               <p className="text-sm text-gray-500">Scanned 2 minutes ago</p>

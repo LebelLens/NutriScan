@@ -4,7 +4,7 @@ import { saveUserProfile } from '../Services/db'
 import { useAuthContext } from '../Context/authContext'
 import toast from 'react-hot-toast'
 
-const apiUrl = import.meta.env.API_URL || "http://localhost:5000"
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 
 export const useSaveUserProfile = () => {

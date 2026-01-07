@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useAuthContext } from '../Context/authContext'
 
-const apiUrl = import.meta.env.API_URL || "http://localhost:5000"
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 
 const useLogin = () => {

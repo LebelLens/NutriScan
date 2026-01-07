@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import useLogin from '../Hooks/useLogin';
 import toast from 'react-hot-toast';
 
-const apiUrl = import.meta.env.API_URL || "http://localhost:5000"
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 const Login = () => {
     const navigate = useNavigate()

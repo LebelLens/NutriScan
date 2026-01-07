@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const HealthData = require("../models/healthdata.js");
 const ensureAuthenticated = require("../middleware/auth.js");
+const User = require("../models/user.js");
 
 // POST /api/health → Save health data
 router.post("/", ensureAuthenticated, async (req, res) => {
@@ -22,6 +23,11 @@ router.post("/", ensureAuthenticated, async (req, res) => {
       healthCondition,
       allergy
     });
+
+    const user=await User.findOne({_id: req.user._id})
+    user.healthData=healthData._id;
+    console.log(user);
+    await user.save()
 
     res.status(201).json(healthData);
   } catch (error) {

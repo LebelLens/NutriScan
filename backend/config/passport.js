@@ -10,7 +10,8 @@ console.log("GOOGLE_CLIENT_SECRET =", process.env.GOOGLE_CLIENT_SECRET);
 module.exports = function(passport) {
     passport.use(new LocalStrategy({ usernameField: "email" }, async (email, password, done) => {
         try {
-            const user = await User.findOne({ email });
+            const user = await User.findOne({ email }).populate("healthData", "allergy healthCondition");
+            console.log(user);
             if(!user) return done(null, false, { message: "No user found" });
 
             if (!user.password) {

@@ -14,6 +14,10 @@ const userSchema=new mongoose.Schema({
     },
     password:{
         type:String,
+    },
+    healthData:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'HealthData'
     }
 })
 module.exports=mongoose.model("User",userSchema);

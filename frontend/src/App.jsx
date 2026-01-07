@@ -12,6 +12,7 @@ import Onboarding from './Pages/Onboarding'
 import Scanner from './Pages/Scanner'
 import Results from './Pages/Results'
 import { useAuthContext } from './Context/authContext'
+import { saveUserProfile } from './Services/db'
 
 const App = () => {
   const {authUser, setAuthUser, isCheckingAuth, setIsCheckingAuth} = useAuthContext()
@@ -31,6 +32,14 @@ const App = () => {
           if(data.success) {
             localStorage.setItem("NutriScan", JSON.stringify(data.user))
             setAuthUser(data.user)
+            console.log(authUser);
+            
+            await saveUserProfile({
+              name: authUser.name,
+              email: authUser.email,
+              conditions: authUser.healthData? authUser.healthData.conditions: [],
+              allergies: authUser.healthData? authUser.healthData.allergies: [],
+            })
           }
           console.log(data);
       } catch (err) {

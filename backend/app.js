@@ -10,17 +10,13 @@ const app=express();
 app.use(cors({ origin: ["http://localhost:5000", "http://localhost:3000"], credentials: true }))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(express.raw({ type: 'application/octet-stream', limit: '50mb' }));
 
 //Session middleware
 app.use(session({
     secret: process.env.JWT_SECRET || "secret",
     resave: false,
     saveUninitialized: false,
-    cookie: {
-        secure: false,
-        httpOnly: true, 
-        sameSite: 'lax',
-    }
 }))
 
 //Passport
@@ -41,6 +37,8 @@ app.use("/api/health", require("./user/healthroute"));
 app.use("/api/scan", require("./user/scan.js"));
 //Ingredient Routes
 app.use("/api/ingredients", require("./user/ingredient.js"));
+// Ai route(OCR and analyze) 
+app.use("/api/ai", require("./user/ai.js"));
 
 const port=process.env.PORT||5000;
 app.listen(port,()=>{
