@@ -135,6 +135,18 @@ const Results = () => {
           })}
         </div>
 
+        {analysis.positiveHighlights.length>0 && <div className="mt-4">
+          <h3 className="text-lg font-semibold mb-3">Healthy Highlights</h3>
+          <div className="grid grid-cols-1 gap-2">
+            {analysis.positiveHighlights?.map((item, index) => (
+              <div key={index} className="bg-green-50 p-3 rounded-lg border border-green-200">
+                <span className="text-sm font-semibold">{item.name}: </span>
+                <span className="text-gray-800 text-sm">{item.benefit}</span>
+              </div>
+            ))}
+          </div>
+        </div>}
+
         {/* Alternatives */}
         {analysis.alternatives && analysis.alternatives.length > 0 && (
           <div className="bg-linear-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
