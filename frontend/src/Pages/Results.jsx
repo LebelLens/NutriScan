@@ -47,10 +47,11 @@ const Results = () => {
     try {
       await saveScan({
         productName: analysis.productName,
-        ingredients: analysis.flaggedIngredients.map(i => i.name).join(', '),
+        flaggedIngredients: analysis.flaggedIngredients.map(i => i.name).join(', '),
         verdict: analysis.verdict,
         riskLevel: analysis.riskLevel,
-        summary: analysis.summary
+        summary: analysis.summary,
+        positiveHighlights: analysis.positiveHighlights,
       });
       toast.success("Saved to history")
     } catch (error) {

@@ -30,15 +30,13 @@ const App = () => {
           });            
           const data = await res.json()
           if(data.success) {
-            localStorage.setItem("NutriScan", JSON.stringify(data.user))
-            setAuthUser(data.user)
-            console.log(authUser);
+            console.log(data.user);
             
             await saveUserProfile({
-              name: authUser.name,
-              email: authUser.email,
-              conditions: authUser.healthData? authUser.healthData.conditions: [],
-              allergies: authUser.healthData? authUser.healthData.allergies: [],
+              name: data.user.name,
+              email: data.user.email,
+              conditions: data.user.healthData? data.user.healthData.healthCondition: [],
+              allergies: data.user.healthData? data.user.healthData.allergy: [],
             })
           }
           console.log(data);
@@ -62,7 +60,7 @@ const App = () => {
         <Route path='/' element={<Splash />} />
         <Route path='/login' element={!authUser ? <Login />:<Navigate to={'/home'}/>} />
         <Route path='/signup' element={<Signup />} />
-        <Route path='/onboarding' element={authUser ? <Onboarding/>:<Navigate to={'/login'}/>} />
+        <Route path='/onboarding' element={<Onboarding/>} />
         <Route path='/home' element={authUser ? <Home />:<Navigate to={'/login'}/>} />
         <Route path='/history' element={authUser ? <History />:<Navigate to={'/login'}/>} />
         <Route path='/profile' element={authUser ? <Profile />:<Navigate to={'/login'}/>} />

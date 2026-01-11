@@ -57,9 +57,11 @@ const Scanner = () => {
       // Save and navigate
       await saveScan({
         productName: analysis.productName,
-        ingredients: extractedText,
+        flaggedIngredients: analysis.flaggedIngredients,
+        positiveHighlights: analysis.positiveHighlights,
         verdict: analysis.verdict,
-        riskLevel: analysis.riskLevel
+        riskLevel: analysis.riskLevel,
+        summary: analysis.summary,
       });
 
       navigate('/results', { 

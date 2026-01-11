@@ -24,6 +24,7 @@ const useLogin = () => {
                 throw new Error(data.error)
             }
             if(data.success){
+                console.log(data.user);
                 localStorage.setItem("NutriScan", JSON.stringify(data.user))
                 setAuthUser(data.user);
             }

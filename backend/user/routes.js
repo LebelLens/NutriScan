@@ -24,7 +24,7 @@ router.post("/signup", async (req, res) => {
 
         req.login(user, (err) => {
             if(err) return res.status(500).json({ message: "Login error after signup" });
-            res.status(201).json({success: true, user: { id: user._id, name: user.name, email: user.email }});
+            res.status(201).json({success: true, user: { id: user._id, name: user.name, email: user.email, healthCondition: user.healthData?.healthCondition, allergy: user.healthData?.allergy}});
         });
     } catch (err) {
         res.status(500).json({ message: "Server error" });
@@ -39,7 +39,7 @@ router.post("/login", (req, res, next) => {
 
         req.login(user, (err) => {
             if(err) return res.status(500).json({ message: "Login failed" });
-            res.json({success: true, user:{ id: user._id, name: user.name, email: user.email }});
+            res.json({success: true, user:{ id: user._id, name: user.name, email: user.email, healthCondition: user.healthData?.healthCondition, allergy: user.healthData?.allergy}});
         });
     })(req, res, next);
 });
@@ -58,6 +58,7 @@ router.get(
 // Checks if the login is succeeded
 router.get("/login/success", (req, res) => {
     if (req.user) {
+        console.log(req.user);
         res.status(200).json({
             success: true,
             message: "successful",

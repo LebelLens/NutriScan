@@ -7,7 +7,7 @@ export const db = new Dexie('NutriScanDB');
 // Database tables
 db.version(1).stores({
   userProfile: 'id, name, email, conditions, allergies, createdAt',
-  scans: '++id, timestamp, productName, ingredients, verdict, riskLevel, imageUrl',
+  scans: '++id, timestamp, productName, verdict, riskLevel',
   favorites: '++id, productName, barcode, timestamp, verdict',
   ingredientCache: 'name, description, risks, alternatives, lastUpdated'
 });
