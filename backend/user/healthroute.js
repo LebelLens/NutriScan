@@ -15,6 +15,14 @@ router.post("/", ensureAuthenticated, async (req, res) => {
       allergy
     } = req.body;
 
+    const healthDataExists=await HealthData.findOne({user: req.user._id})
+    if(healthDataExists){
+      healthDataExists.healthCondition=healthCondition;
+      healthDataExists.allergy=allergy;
+      await healthDataExists.save();
+      return res.status(201).json(healthDataExists);
+    }
+
     const healthData = await HealthData.create({
       user: req.user._id,
       age,

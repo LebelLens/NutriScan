@@ -38,8 +38,17 @@ const App = () => {
               conditions: data.user.healthData? data.user.healthData.healthCondition: [],
               allergies: data.user.healthData? data.user.healthData.allergy: [],
             })
+
+
+            if(data.user.googleId){                            
+              setAuthUser({
+                id: data.user._id,
+                name: data.user.name,
+                email: data.user.email,
+              })
+            }
           }
-          console.log(data);
+          console.log(authUser);
       } catch (err) {
           console.log("Not logged in");
       } finally {
@@ -48,6 +57,12 @@ const App = () => {
     };
     getUser();
   }, [])
+
+  useEffect(()=>{
+    if(authUser){
+      localStorage.setItem("NutriScan", JSON.stringify(authUser))
+    }
+  },[authUser])
 
   if(isCheckingAuth){
     return <div className='loading-spinner'>Loading...</div>
