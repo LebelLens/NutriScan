@@ -46,13 +46,26 @@ router.post("/login", (req, res, next) => {
 //Google login
 router.get('/auth/google',passport.authenticate('google', { scope: ['profile','email'] }));
 
-//Google callback
+//Google callback with error handling
 router.get(
   '/auth/google/callback',
-  passport.authenticate('google', {
-    successRedirect: 'http://localhost:3000/onboarding',
-    failureRedirect: 'http://localhost:3000/login',
-  })
+  (req, res, next) => {
+    passport.authenticate('google', (err, user, info) => {
+      if (err) return next(err);
+      
+      // If authentication failed (e.g., account conflict)
+      if (!user) {
+        const errorMessage = info?.message || 'Authentication failed';
+        return res.redirect(`http://localhost:3000/login`);
+      }
+
+      req.login(user, (err) => {
+        if (err) return next(err);
+        if(user.isDoneOnboarding) res.redirect('http://localhost:3000/home');
+        else res.redirect('http://localhost:3000/onboarding')
+      });
+    })(req, res, next);
+  }
 );
 
 // Checks if the login is succeeded

@@ -30,15 +30,15 @@ mongoose.connect(process.env.MONGO_URI)
 .catch(err=>console.log(err));
 
 //Auth Routes  
-app.use("/api/users", require("./user/routes.js"));
+app.use("/api/users", require("./routes/user.js"));
 // Health Routes
-app.use("/api/health", require("./user/healthroute"));
+app.use("/api/health", require("./routes/healthroute"));
 //Scan Routes 
-app.use("/api/scan", require("./user/scan.js"));
+app.use("/api/scan", require("./routes/scan.js"));
 //Ingredient Routes
-app.use("/api/ingredients", require("./user/ingredient.js"));
+app.use("/api/ingredients", require("./routes/ingredient.js"));
 // Ai route(OCR and analyze) 
-app.use("/api/ai", require("./user/ai.js"));
+app.use("/api/ai", require("./routes/ai.js"));
 
 const port=process.env.PORT||5000;
 app.listen(port,()=>{

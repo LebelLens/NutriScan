@@ -15,6 +15,10 @@ const userSchema=new mongoose.Schema({
     password:{
         type:String,
     },
+    isDoneOnboarding:{
+        type: Boolean,
+        default: false
+    },
     healthData:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'HealthData'

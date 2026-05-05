@@ -4,16 +4,16 @@ const LocalStrategy = require("passport-local").Strategy;
 const GoogleStrategy=require("passport-google-oauth20").Strategy;
 const bcrypt = require("bcryptjs");
 const User = require("../models/user.js");
-console.log("GOOGLE_CLIENT_ID =", process.env.GOOGLE_CLIENT_ID);
-console.log("GOOGLE_CLIENT_SECRET =", process.env.GOOGLE_CLIENT_SECRET);
 
 module.exports = function(passport) {
     passport.use(new LocalStrategy({ usernameField: "email" }, async (email, password, done) => {
         try {
+            // Check if an user already exists
             const user = await User.findOne({ email }).populate("healthData", "allergy healthCondition");
             console.log(user);
             if(!user) return done(null, false, { message: "No user found" });
 
+            // if user exists but has no password just show that the account is linked with google.
             if (!user.password) {
               return done(null, false, { 
                 success: false,
@@ -21,6 +21,7 @@ module.exports = function(passport) {
               });
             }
 
+            // if password matches log in the user
             const isMatch = await bcrypt.compare(password, user.password);
             if(!isMatch) return done(null, false, { message: "Password incorrect" });
 
@@ -37,23 +38,23 @@ module.exports = function(passport) {
     },
     async(accessToken,refreshToken,profile,done)=>{
         try{
-            //Check if user already exists
+            //Check if user already exists with google id
             let user = await User.findOne({ googleId: profile.id });
+            // if not check if the user has an account with the email provided
             if (!user) {
             const email = profile.emails?.[0]?.value;
             user = await User.findOne({ email });
 
+            // if the user has email login account add the google id to the account
             if (user) {
               user.googleId = profile.id;
-              user.provider = "google";
               await user.save();
             } else {
-              // 3. Create new user
+              // Create new user
               user = await User.create({
                 googleId: profile.id,
                 email,
                 name: profile.displayName,
-                provider: "google",
               });
             }
           }

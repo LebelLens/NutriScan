@@ -34,6 +34,7 @@ router.post("/", ensureAuthenticated, async (req, res) => {
 
     const user=await User.findOne({_id: req.user._id})
     user.healthData=healthData._id;
+    user.isDoneOnboarding=true;
     console.log(user);
     await user.save()
 
