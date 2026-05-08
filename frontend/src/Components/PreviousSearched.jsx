@@ -35,6 +35,7 @@ const PreviousSearched = () => {
 
     useEffect(() => {
       async function f(){
+        // Getting the recent scan
         const r= await getScanHistory(1)
         console.log(r);
         
@@ -72,8 +73,9 @@ const PreviousSearched = () => {
             <div className='space-y-3'>
                 <div className='flex flex-col gap-2'>
                     <h3 className="text-lg font-semibold px-1 mb-2">Flagged Ingredients</h3>
+                    {recent.flaggedIngredients==0 && <div>Nothing to show</div>}
                     {recent.flaggedIngredients?.map((ingredient, index) => {
-                        const riskColor = ingredient.risk === 'high' ? 'red' : 'yellow';
+                        const riskColor = ingredient.risks[0] === 'high' ? 'red' : 'yellow';
                         return (
                         <div
                             key={index}
@@ -85,10 +87,10 @@ const PreviousSearched = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <h4 className="font-semibold text-gray-900 mb-1">{ingredient.name}</h4>
-                                <p className="text-sm text-gray-600 mb-2">{ingredient.reason}</p>
+                                <p className="text-sm text-gray-600 mb-2">{ingredient.description}</p>
                                 <div className="flex items-center gap-2">
                                 <span className={`text-xs px-2 py-1 ${riskColor==='red'?'bg-red-100':'bg-yellow-100'} ${riskColor==='red'?'text-red-700':'text-yellow-700'} rounded-full font-medium`}>
-                                    {ingredient.affectedCondition}
+                                    {ingredient.risks[0]}
                                 </span>
                                 </div>
                             </div>
@@ -98,20 +100,20 @@ const PreviousSearched = () => {
                     })}
                 </div>
 
-                {recent.positiveHighlights.length>0 && <div className="mt-4">
+                {recent.positiveHighlights?.length>0 && <div className="mt-4">
                     <h3 className="text-lg font-semibold mb-3">Healthy Highlights</h3>
                     <div className="grid grid-cols-1 gap-2">
                         {recent.positiveHighlights?.map((item, index) => (
                         <div key={index} className="bg-green-50 p-3 rounded-lg border border-green-200">
                             <span className="text-sm font-semibold">{item.name}: </span>
-                            <span className="text-gray-800 text-sm">{item.benefit}</span>
+                            <span className="text-gray-800 text-sm">{item.description}</span>
                         </div>
                         ))}
                     </div>
                 </div>}
 
             </div>
-            {/* Related to database buttons */}
+            {/* Related to database buttons (Does not do anything) */}
             <div className='flex gap-3 mt-4'>
                 <button className='p-3 bg-(--surface) rounded-lg'>Save to History</button>
                 <button className='p-3 bg-(--safe) rounded-lg'>Find Alternatives</button>

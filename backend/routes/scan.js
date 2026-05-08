@@ -6,7 +6,7 @@ const ensureAuthenticated = require("../middleware/auth");
 //Save scan result
 router.post("/", ensureAuthenticated, async (req, res) => {
   try {
-    const { productName, verdict, riskLevel, ingredients } = req.body;
+    const { productName, verdict, riskLevel, flaggedIngredients, positiveHighlights, summary } = req.body;
 
     if (!productName || !verdict || !riskLevel) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -17,7 +17,9 @@ router.post("/", ensureAuthenticated, async (req, res) => {
       productName,
       verdict,
       riskLevel,
-      ingredients
+      flaggedIngredients,
+      positiveHighlights,
+      summary,
     });
 
     res.status(201).json(scan);

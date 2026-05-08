@@ -1,6 +1,22 @@
+function parseTimestamp(timestamp) {
+  if (typeof timestamp === 'number') return timestamp;
+  if (timestamp instanceof Date) return timestamp.getTime();
+  if (typeof timestamp === 'string') {
+    const parsed = Date.parse(timestamp);
+    return Number.isNaN(parsed) ? null : parsed;
+  }
+  if (timestamp && typeof timestamp === 'object' && '$date' in timestamp) {
+    return parseTimestamp(timestamp.$date);
+  }
+  return null;
+}
+
 export function timeAgo(timestamp) {
+  const parsedTimestamp = parseTimestamp(timestamp);
+  if (parsedTimestamp === null) return '';
+
   const now = Date.now();
-  const secondsPast = (now - timestamp) / 1000;
+  const secondsPast = (now - parsedTimestamp) / 1000;
 
   if (secondsPast < 60) {
     return 'Just now';

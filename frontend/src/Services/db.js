@@ -7,7 +7,7 @@ export const db = new Dexie('NutriScanDB');
 // Database tables
 db.version(1).stores({
   userProfile: 'id, name, email, conditions, allergies, createdAt',
-  scans: '++id, timestamp, productName, verdict, riskLevel',
+  scans: '++id, timestamp, productName, flaggedIngredients, positiveHighlights, verdict, riskLevel',
   favorites: '++id, productName, barcode, timestamp, verdict',
   ingredientCache: 'name, description, risks, alternatives, lastUpdated'
 });
@@ -60,7 +60,6 @@ export const saveScan = async (scanData) => {
   try {
     const scan = {
       ...scanData,
-      timestamp: Date.now()
     };
     const id = await db.scans.add(scan);
     return { ...scan, id };

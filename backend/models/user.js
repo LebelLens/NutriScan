@@ -22,6 +22,10 @@ const userSchema=new mongoose.Schema({
     healthData:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'HealthData'
-    }
+    },
+    scannedData: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Scan'
+    }],
 })
 module.exports=mongoose.model("User",userSchema);

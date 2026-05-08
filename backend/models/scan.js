@@ -35,13 +35,20 @@ const scanSchema = new mongoose.Schema({
         type: String, // e.g., "Low", "Medium", "High"
         required: true
     },
-    ingredients: {
+    flaggedIngredients: {
         type: [ingredientSchema],
         default: []
     },
+    positiveHighlights: {
+        type: [ingredientSchema],
+        default: []
+    }, 
     isFavourite: {
         type: Boolean,
         default: false
+    },
+    summary: {
+        type: String, 
     },
     createdAt: {
         type: Date,

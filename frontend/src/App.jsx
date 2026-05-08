@@ -13,49 +13,18 @@ import Scanner from './Pages/Scanner'
 import Results from './Pages/Results'
 import { useAuthContext } from './Context/authContext'
 import { saveUserProfile } from './Services/db'
+import useGetUser from './Hooks/useGetUser'
 
 const App = () => {
-  const {authUser, setAuthUser, isCheckingAuth, setIsCheckingAuth} = useAuthContext()
+  const {authUser, isCheckingAuth} = useAuthContext()
+  const {getUser} = useGetUser()
 
   useEffect(() => {
-    const getUser = async () => {
-      setIsCheckingAuth(true)
-      try {
-          const res = await fetch("http://localhost:5000/api/users/login/success", {
-              method: 'GET',
-              credentials: 'include',
-              headers: {
-                  'content-type': 'application/json',
-              }
-          });            
-          const data = await res.json()
-          if(data.success) {
-            console.log(data.user);
-            
-            await saveUserProfile({
-              name: data.user.name,
-              email: data.user.email,
-              conditions: data.user.healthData? data.user.healthData.healthCondition: [],
-              allergies: data.user.healthData? data.user.healthData.allergy: [],
-            })
-
-
-            if(data.user.googleId){                            
-              setAuthUser({
-                id: data.user._id,
-                name: data.user.name,
-                email: data.user.email,
-              })
-            }
-          }
-          console.log(authUser);
-      } catch (err) {
-          console.log("Not logged in");
-      } finally {
-        setIsCheckingAuth(false)
-      }
-    };
-    getUser();
+    // Checking if user is logged in or not
+    async function f(){
+      await getUser()
+    }
+    f();
   }, [])
 
   useEffect(()=>{

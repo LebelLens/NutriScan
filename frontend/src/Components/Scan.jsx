@@ -6,9 +6,11 @@ import { useEffect } from 'react'
 import { getScanHistory, getScansByVerdict, getScansCount } from '../Services/db'
 import { useState } from 'react'
 import {timeAgo} from '../utils/timeConverter.js'
+import useGetScan from '../Hooks/useGetScan.js'
 
 const Scan = () => {
     const navigate = useNavigate()
+    const {getScan, isLoadingScans, setIsLoadingScans}= useGetScan()
     const [history, setHistory] = useState([])
     const [totalItems, setTotalItems]=useState(0)
     const [safeItems, setSafeItems]=useState(0)
@@ -21,10 +23,15 @@ const Scan = () => {
 
     useEffect(() => {
       async function f() {
+        // Getting the scans from database and storing it in IndexedDB
+        await getScan();
+        // Getting 3 scans from IndexedDB
         const h = await getScanHistory(3);
         setHistory(h)
+        // Getting the total scans from IndexedDB
         const total=await getScansCount();
         setTotalItems(total)
+        // Getting the safe scans from indexedDB
         const safe=await getScansByVerdict('safe')
         setSafeItems(safe.length)
       }
@@ -60,6 +67,7 @@ const Scan = () => {
             </div>
             <div className='flex flex-col gap-3 mt-4'>
                 {/* Map from here, details of scanned products */}
+                {isLoadingScans && <h3>Loading the content. Please wait...</h3>}
                 {totalItems==0 && <h3 className='text-(--textLight)'>Nothing to show!</h3>}
                 {totalItems>0 && history.map((his, i)=>( <div key={i} className='flex items-center justify-between bg-(--surface) p-3 rounded-xl'>
                     <div>

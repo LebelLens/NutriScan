@@ -6,9 +6,15 @@ import {extractTextWithAzure} from '../Services/azureOCR.js'
 import toast from 'react-hot-toast'
 import { getUserProfile, saveScan } from '../Services/db.js';
 import { analyzeIngredientsWithAzure } from '../Services/azureOpenAI.js';
+import { useAuthContext } from '../Context/authContext.jsx';
+import useSaveScan from '../Hooks/useSaveScan.js';
+
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 const Scanner = () => {
     const navigate=useNavigate();
+    const {authUser}=useAuthContext()
+    const {saveToMongoDB} = useSaveScan()
     const [showCamera, setShowCamera] = useState(true);
     const [isProcessing, setIsProcessing] = useState(false)
     const [capturedImage, setCapturedImage] = useState(null)
@@ -54,7 +60,7 @@ const Scanner = () => {
         userProfile
       );  
     
-      // Save and navigate
+      // Save in IndexedDB
       await saveScan({
         productName: analysis.productName,
         flaggedIngredients: analysis.flaggedIngredients,
@@ -63,6 +69,30 @@ const Scanner = () => {
         riskLevel: analysis.riskLevel,
         summary: analysis.summary,
       });
+
+      const mappedIngredients = Array.isArray(analysis.flaggedIngredients) 
+          ? analysis.flaggedIngredients.map((item)=>({
+            name: item.name || 'Unknown',
+            description: item.reason || item.simpleExplaination || '',
+            alternatives: Array.isArray(item.alternatives) ? item.alternatives: [],
+            risks: item.risk ? [item.risk]:[]
+          })) : []
+
+      const positiveIngredients = Array.isArray(analysis.positiveHighlights)
+          ? analysis.positiveHighlights.map(item=>({
+            name: item.name || 'Unknown',
+            description: item.benefit || '',
+          })) : []
+
+      // Save in MongoDB
+      await saveToMongoDB({
+        productName: analysis.productName,
+        verdict: analysis.verdict,
+        riskLevel: analysis.riskLevel,
+        flaggedIngredients: mappedIngredients,
+        positiveHighlights: positiveIngredients,
+        summary: analysis.summary
+      })
 
       navigate('/results', { 
         state: { 
