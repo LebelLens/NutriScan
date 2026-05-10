@@ -3,7 +3,7 @@ import { Heart, Check, AlertCircle, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { saveUserProfile } from '../Services/db';
 import toast from 'react-hot-toast';
-import {useSaveUserProfile} from '../hooks/useUserProfile';
+import {useSaveUserProfile} from '../hooks/useUserProfile.js';
 
 const Onboarding = () => {
     const navigate=useNavigate();
