@@ -1,6 +1,6 @@
 import { User, PlusIcon, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import {useGetUserProfile, useUpdateUserProfile, useSaveUserProfile} from '../hooks/useUserProfile'
+import {useGetUserProfile, useUpdateUserProfile, useSaveUserProfile} from '../Hooks/useUserProfile'
 import toast from 'react-hot-toast';
 
 // function to convert time to moment
