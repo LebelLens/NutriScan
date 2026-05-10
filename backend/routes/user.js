@@ -56,13 +56,13 @@ router.get(
       // If authentication failed (e.g., account conflict)
       if (!user) {
         const errorMessage = info?.message || 'Authentication failed';
-        return res.redirect(`http://localhost:3000/login`);
+        return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login`);
       }
 
       req.login(user, (err) => {
         if (err) return next(err);
-        if(user.isDoneOnboarding) res.redirect('http://localhost:3000/home');
-        else res.redirect('http://localhost:3000/onboarding')
+        const redirectUrl = user.isDoneOnboarding ? 'home' : 'onboarding';
+        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/${redirectUrl}`);
       });
     })(req, res, next);
   }
