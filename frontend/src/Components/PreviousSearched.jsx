@@ -46,7 +46,7 @@ const PreviousSearched = () => {
 
     
     if(!recent){
-        return <div>Loading...</div>
+        return <div className='flex items-center justify-center mt-25 text-(--textLight)'>No recent scans found.</div>
     }
     
     const config=verdictConfig[recent.verdict]
