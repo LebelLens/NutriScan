@@ -6,11 +6,14 @@ const cors=require("cors");
 const session=require("express-session");
 const app=express();
 
+//Trust proxy for production
+app.set('trust proxy', 1);
+
 //Middleware
 app.use(cors({ 
-    origin: [process.env.FRONTEND_URL, "http://localhost:3000"], 
+    origin: [process.env.FRONTEND_URL, "http://localhost:3000"].filter(Boolean), 
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
