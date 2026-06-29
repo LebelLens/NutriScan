@@ -138,7 +138,6 @@ const Scanner = () => {
           <div className="space-y-2">
             <div className="relative inline-flex items-center justify-center">
               <div className="w-16 h-16 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
-              <Camera size={22} className="absolute text-emerald-400 animate-pulse" />
             </div>
             <h2 className="text-xl font-black tracking-tight mt-2">
               Analyzing Ingredients
