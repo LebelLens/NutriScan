@@ -2,6 +2,7 @@ import React from 'react'
 import '../index.css'
 import toast from 'react-hot-toast'
 import { useAuthContext } from '../Context/authContext'
+import { LogOut } from 'lucide-react'
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
@@ -25,9 +26,21 @@ const Navbar = () => {
   }
 
   return (
-    <div className='fixed top-0 left-0 right-0 w-full px-4 py-7 flex justify-between backdrop-blur-lg z-50'>
-      <h1 className='flex items-center text-4xl font-bold'><img className='h-10 w-10' src="../../favicon.svg" alt="" />NutriScan</h1>
-      <button onClick={handleLogout} className='border px-2 rounded-md bg-(--secondary) text-white'>Logout</button>
+    <div className='sticky top-0 left-0 right-0 w-full px-5 py-4 flex justify-between items-center glass-header backdrop-blur-md z-45'>
+      <div className='flex items-center gap-2'>
+        <div className="w-9 h-9 bg-emerald-500/10 flex items-center justify-center rounded-xl text-emerald-600">
+          <img className='h-full w-full' src="/apple-touch-icon.png" alt="NutriScan" />
+        </div>
+        <h1 className='text-lg font-black text-slate-800 tracking-tight'>NutriScan</h1>
+      </div>
+      <button 
+        onClick={handleLogout} 
+        className='flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-rose-600 bg-slate-100 hover:bg-rose-50 px-3 py-2 rounded-xl transition-all cursor-pointer'
+        title="Logout"
+      >
+        <LogOut size={14} />
+        <span>Logout</span>
+      </button>
     </div>
   )
 }

@@ -116,50 +116,64 @@ const Scanner = () => {
     if(showCamera) return <Camera onCapture={handleCapture} onClose={handleClose}/>
 
   if(isProcessing){
-    return <div className="fixed inset-0 bg-gray-900 z-50 flex flex-col items-center justify-center p-6">
-        <div className="max-w-md w-full text-center">
-          {/* Preview of captured image */}
+    return (
+      <div className="absolute inset-0 bg-slate-900 z-50 flex flex-col items-center justify-center p-6 text-white select-none">
+        <div className="w-full text-center max-w-xs space-y-6">
+          {/* Preview of captured image with animated laser */}
           {capturedImage && (
-            <div className="mb-8 rounded-2xl overflow-hidden">
+            <div className="relative mb-6 rounded-3xl overflow-hidden border border-slate-700/50 shadow-2xl group">
               <img 
                 src={capturedImage} 
-                alt="Captured" 
-                className="w-full h-64 object-cover"
+                alt="Captured Ingredients" 
+                className="w-full h-56 object-cover brightness-90 contrast-105"
               />
+              {/* Pulsing overlay scanner grid */}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-slate-900/20"></div>
+              {/* Scan laser */}
+              <div className="scanner-laser"></div>
             </div>
           )}
 
-          {/* Loading animation */}
-          <div className="mb-6">
-            <Loader2 size={64} className="text-green-500 animate-spin mx-auto" />
+          {/* Core Status */}
+          <div className="space-y-2">
+            <div className="relative inline-flex items-center justify-center">
+              <div className="w-16 h-16 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
+              <Camera size={22} className="absolute text-emerald-400 animate-pulse" />
+            </div>
+            <h2 className="text-xl font-black tracking-tight mt-2">
+              Analyzing Ingredients
+            </h2>
+            <p className="text-xs text-slate-400 leading-relaxed px-4">
+              Reading ingredients lists with Azure AI and verifying safety preferences.
+            </p>
           </div>
 
-          <h2 className="text-2xl font-bold text-white mb-3">
-            Analyzing Ingredients
-          </h2>
-          <p className="text-gray-400 mb-6">
-            Reading ingredient list and checking against your health profile...
-          </p>
-
-          {/* Progress steps */}
-          <div className="space-y-3 text-left">
-            {progress && (
-            <div className="flex items-center gap-3 text-green-400">
-              <div className="w-2 h-2 rounded-full bg-green-400"></div>
-              <span className="text-sm">Extracting text from image</span>
+          {/* Animated Checklist */}
+          <div className="bg-slate-800/40 border border-slate-800 rounded-2xl p-4.5 space-y-3.5 text-left text-xs font-semibold">
+            <div className="flex items-center gap-3 text-emerald-400">
+              <div className="w-5 h-5 bg-emerald-500/10 rounded-full flex items-center justify-center shrink-0">
+                <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+              </div>
+              <span>Reading text from image</span>
             </div>
-            )}
-            <div className="flex items-center gap-3 text-green-400">
-              <div className="w-2 h-2 rounded-full bg-green-400"></div>
-              <span className="text-sm">Identifying ingredients</span>
+            
+            <div className="flex items-center gap-3 text-emerald-400">
+              <div className="w-5 h-5 bg-emerald-500/10 rounded-full flex items-center justify-center shrink-0">
+                <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+              </div>
+              <span>Identifying active chemicals & additives</span>
             </div>
-            <div className="flex items-center gap-3 text-gray-400">
-              <div className="w-2 h-2 rounded-full bg-gray-600 animate-pulse"></div>
-              <span className="text-sm">Analyzing health risks</span>
+            
+            <div className="flex items-center gap-3 text-emerald-400/80 animate-pulse">
+              <div className="w-5 h-5 bg-emerald-500/10 rounded-full flex items-center justify-center shrink-0">
+                <div className="w-1.5 h-1.5 border border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+              <span>Verifying allergies & conditions</span>
             </div>
           </div>
         </div>
       </div>
+    )
   }
 
   return null;

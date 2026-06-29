@@ -1,24 +1,185 @@
 @import "tailwindcss";
 
-/* Main colours */
-:root{
-  --safe: #10b981;
-  --caution: #f59e0b;
-  --danger: #ef4444;
+@theme {
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Premium Color Tokens */
+:root {
   --primary: #059669;
+  --primary-light: #34d399;
+  --primary-dark: #065f46;
   --secondary: #6366f1;
-  --background: #f9fafb;
+  --secondary-light: #818cf8;
+  --safe: #10b981;
+  --safe-light: #d1fae5;
+  --caution: #f59e0b;
+  --caution-light: #fef3c7;
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  --background: #f8fafc; /* Beautiful soft slate-50 */
   --surface: #ffffff;
-  --text: #1f2937;
-  --textLight: #6b7280;
-  --border: #e5e7eb;
+  --text: #0f172a; /* Slate-900 for ultra-premium readability */
+  --textLight: #64748b; /* Slate-500 */
+  --border: #f1f5f9; /* Slate-100 for clean subtle borders */
 }
 
+/* Base resets & styles */
+body {
+  font-family: var(--font-sans);
+  background-color: #0f172a; /* Sleek dark backdrop for desktop, framing the app mock */
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* App container framing for premium desktop view */
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* The core mobile PWA viewport frame */
+.app-viewport {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--text);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  box-shadow: none;
+}
+
+/* On desktop, frame the app beautifully as a virtual mobile screen */
+@media (min-width: 768px) {
+  .app-viewport {
+    max-width: 440px;
+    height: 880px;
+    min-height: 880px;
+    border-radius: 40px;
+    border: 12px solid #1e293b;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    position: relative;
+  }
+}
+
+/* Hide scrollbars for app-like presentation */
+.app-viewport::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* Glassmorphism styling */
+.glass-nav {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.glass-header {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(241, 245, 249, 0.8);
+}
+
+/* Custom premium card design */
 .card {
-  background: linear-gradient(135deg, #059669 0%, #6366f1 100%);
-  box-shadow: 0 10px 30px rgba(5, 150, 105, 0.3);
+  background: linear-gradient(135deg, #059669 0%, #4f46e5 100%);
+  box-shadow: 0 12px 30px rgba(5, 150, 105, 0.25);
+  position: relative;
+  overflow: hidden;
 }
 
-button{
+.card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Loading animations */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--background);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Scan laser animation */
+@keyframes scan {
+  0% { top: 0%; opacity: 0.8; }
+  50% { top: 100%; opacity: 0.8; }
+  100% { top: 0%; opacity: 0.8; }
+}
+
+.scanner-laser {
+  position: absolute;
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(to right, transparent, var(--safe), transparent);
+  animation: scan 4s linear infinite;
+  box-shadow: 0 0 12px var(--safe);
+}
+
+/* Input floating placeholder support */
+input::placeholder {
+  color: #94a3b8;
+  opacity: 0.8;
+}
+
+button {
   cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* Smooth page transitions and sheets */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Soft ambient glows */
+.glow-safe {
+  box-shadow: 0 8px 24px -4px rgba(16, 185, 129, 0.2);
+}
+
+.glow-caution {
+  box-shadow: 0 8px 24px -4px rgba(245, 158, 11, 0.2);
+}
+
+.glow-danger {
+  box-shadow: 0 8px 24px -4px rgba(239, 68, 68, 0.2);
+}
+
+.glow-primary {
+  box-shadow: 0 8px 24px -4px rgba(5, 150, 105, 0.25);
 }

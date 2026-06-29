@@ -5,7 +5,7 @@ import UserProfile from '../Components/UserProfile'
 
 const Profile = () => {
   return (
-    <div>
+    <div className="relative min-h-screen flex flex-col pb-16">
       <Navbar/>
       <UserProfile/>
       <Footer open={'profile'}/>

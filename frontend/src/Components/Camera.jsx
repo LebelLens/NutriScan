@@ -136,7 +136,7 @@ const Camera = ({ onCapture, onClose }) => {
   // Error State
   if (error) {
     return (
-      <div className="fixed inset-0 bg-gray-900 z-50 flex flex-col items-center justify-center p-6">
+      <div className="absolute inset-0 bg-slate-900 z-50 flex flex-col items-center justify-center p-6">
         <div className="max-w-md w-full bg-gray-800 rounded-2xl p-8 text-center">
           <div className="w-20 h-20 bg-red-500 bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6">
             <AlertCircle size={48} className="text-white" />
@@ -181,7 +181,7 @@ const Camera = ({ onCapture, onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black z-50">
+    <div className="absolute inset-0 bg-black z-50 overflow-hidden rounded-3xl">
       {/* Video Stream */}
       <video
         ref={videoRef}

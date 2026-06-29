@@ -39,7 +39,10 @@ require("./config/passport")(passport);
 //Connect to MongoDb
 mongoose.connect(process.env.MONGO_URI)
 .then(()=>console.log("MongoDB connected successfully"))
-.catch(err=>console.log(err));
+.catch(err=>{
+    mongoose.connect(process.env.LOCAL_MONGO_URI)
+    console.log("Local MongoDB connected")
+});
 
 //Auth Routes  
 app.use("/api/users", require("./routes/user.js"));

@@ -1,122 +1,160 @@
 import React, { useEffect, useState } from 'react'
-import { Scan, XCircle, MoveRightIcon, AlertCircle, CircleCheck, CheckCircle, AlertTriangle } from 'lucide-react'
-import { getScanHistory } from '../Services/db'
+import { Search, Calendar, ChevronRight, XCircle, AlertCircle, CircleCheck, Info, Trash2 } from 'lucide-react'
+import { getScanHistory, deleteScan } from '../Services/db'
 import { timeAgo } from '../utils/timeConverter'
+import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 const PreviousSearched = () => {
-    const [recent, setRecent] = useState(null)
+    const navigate = useNavigate()
+    const [scans, setScans] = useState([])
+    const [searchQuery, setSearchQuery] = useState('')
+    const [filterVerdict, setFilterVerdict] = useState('all')
+    const [isLoading, setIsLoading] = useState(true)
 
-    const verdictConfig = {
-    safe: {
-      color: 'green',
-      bg: 'bg-green-50',
-      border: 'border-green-500',
-      text: 'text-green-700',
-      icon: <CheckCircle className='text-(--safe)'/>,
-      label: 'Safe to Eat'
-    },
-    caution: {
-      color: 'yellow',
-      bg: 'bg-yellow-50',
-      border: 'border-yellow-500',
-      text: 'text-yellow-700',
-      icon: <AlertTriangle className='text-(--caution)'/>,
-      label: 'Eat with Caution'
-    },
-    avoid: {
-      color: 'red',
-      bg: 'bg-red-50',
-      border: 'border-red-500',
-      text: 'text-red-700',
-      icon: <XCircle className='text-(--danger)'/>,
-      label: 'Avoid This Product'
+    const icons = {
+        'avoid': <XCircle size={18} className="text-rose-500 fill-rose-500/10" />,
+        'caution': <AlertCircle size={18} className="text-amber-500 fill-amber-500/10" />,
+        'safe': <CircleCheck size={18} className="text-emerald-500 fill-emerald-500/10" />,
     }
-  };
+
+    const verdictLabel = {
+        'avoid': 'Avoid',
+        'caution': 'Caution',
+        'safe': 'Safe',
+    }
+
+    const verdictClass = {
+        'avoid': 'bg-rose-50 text-rose-700 border-rose-100',
+        'caution': 'bg-amber-50 text-amber-700 border-amber-100',
+        'safe': 'bg-emerald-50 text-emerald-700 border-emerald-100',
+    }
 
     useEffect(() => {
-      async function f(){
-        // Getting the recent scan
-        const r= await getScanHistory(1)
-        console.log(r);
-        
-        setRecent(r[0])
-      }
-      f()
+        loadHistory()
     }, [])
 
-    
-    if(!recent){
-        return <div className='flex items-center justify-center mt-25 text-(--textLight)'>No recent scans found.</div>
+    const loadHistory = async () => {
+        setIsLoading(true)
+        try {
+            const history = await getScanHistory(50)
+            setScans(history)
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setIsLoading(false)
+        }
     }
-    
-    const config=verdictConfig[recent.verdict]
+
+    const handleDelete = async (e, id) => {
+        e.stopPropagation() // Prevent navigating to details
+        if (window.confirm("Are you sure you want to delete this scan from your history?")) {
+            try {
+                await deleteScan(id)
+                toast.success("Scan deleted")
+                loadHistory()
+            } catch (error) {
+                toast.error("Failed to delete scan")
+            }
+        }
+    }
+
+    // Filter scans based on search and verdict filter
+    const filteredScans = scans.filter(scan => {
+        const matchesSearch = scan.productName.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesVerdict = filterVerdict === 'all' || scan.verdict === filterVerdict
+        return matchesSearch && matchesVerdict
+    })
+
     return (
-        <div className='md:w-[50vw] p-4 rounded-2xl m-auto my-24 border border-(--border) bg-(--background) shadow-[0_10px_30px_rgba(5, 150, 105, 0.3)]'>
-            {/* Last scanned product's name */}
-            <div className='bg-(--surface) flex flex-col gap-3 items-center justify-center rounded-2xl'>
-                <Scan className='bg-(--background) p-4 w-15 h-15 rounded-2xl text-(--textLight) mt-4' />
-                <h1 className='text-lg font-medium text-(--text)'>{recent.productName}</h1>
-                <p className='text-(--textLight)'>{timeAgo(recent.timestamp)}</p>
-            </div>
-            {/* Product's details*/}
-            <div className='flex flex-col gap-4'>
-                <div className={`mt-5 flex gap-2 border-2 ${config.bg} ${config.border} bg-red-400/10 rounded-2xl p-4`}>
-                    {config.icon}
-                    <p className={`${config.text}`}>{config.label}</p>
+        <div className="flex-1 overflow-y-auto px-5 pt-4 pb-28 bg-slate-50">
+            {/* Header section */}
+            <div className="flex justify-between items-center mb-5">
+                <div>
+                    <h1 className="text-2xl font-black text-slate-800 tracking-tight">Scan History</h1>
+                    <p className="text-xs text-slate-400 font-semibold mt-0.5">
+                        {scans.length} product{scans.length !== 1 && 's'} analyzed
+                    </p>
                 </div>
-                {recent.verdict!=='safe' && <div className='bg-(--surface) rounded-xl p-4'>
-                    <h1 className='text-(--text) text-xl'>Why you should {recent.verdict === 'avoid' ? 'avoid' : 'be caution with'} this:</h1>
-                    <p className='text-(--textLight) text-sm w-[95%] m-auto mt-2'>{recent.summary}</p>
-                </div>}
             </div>
-            {/* List of ingredients */}
-            <div className='space-y-3'>
-                <div className='flex flex-col gap-2'>
-                    <h3 className="text-lg font-semibold px-1 mb-2">Flagged Ingredients</h3>
-                    {recent.flaggedIngredients==0 && <div>Nothing to show</div>}
-                    {recent.flaggedIngredients?.map((ingredient, index) => {
-                        const riskColor = ingredient.risks[0] === 'high' ? 'red' : 'yellow';
-                        return (
-                        <div
-                            key={index}
-                            className={`bg-white rounded-2xl p-4 shadow-sm border-2 ${riskColor==='red'?'border-red-200 hover:border-red-400':'border-yellow-200 hover:border-yellow-400'} cursor-pointer transition-all`}
-                        >
-                            <div className="flex items-start gap-3">
-                            <div className={`w-12 h-12 ${riskColor==='red'?'bg-red-100':'bg-yellow-100'} rounded-xl flex items-center justify-center shrink-0`}>
-                                <AlertTriangle size={24} className={`${riskColor==='red'?'text-red-600':'text-yellow-600'}`} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <h4 className="font-semibold text-gray-900 mb-1">{ingredient.name}</h4>
-                                <p className="text-sm text-gray-600 mb-2">{ingredient.description}</p>
-                                <div className="flex items-center gap-2">
-                                <span className={`text-xs px-2 py-1 ${riskColor==='red'?'bg-red-100':'bg-yellow-100'} ${riskColor==='red'?'text-red-700':'text-yellow-700'} rounded-full font-medium`}>
-                                    {ingredient.risks[0]}
-                                </span>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                        );
-                    })}
-                </div>
 
-                {recent.positiveHighlights?.length>0 && <div className="mt-4">
-                    <h3 className="text-lg font-semibold mb-3">Healthy Highlights</h3>
-                    <div className="grid grid-cols-1 gap-2">
-                        {recent.positiveHighlights?.map((item, index) => (
-                        <div key={index} className="bg-green-50 p-3 rounded-lg border border-green-200">
-                            <span className="text-sm font-semibold">{item.name}: </span>
-                            <span className="text-gray-800 text-sm">{item.description}</span>
-                        </div>
-                        ))}
+            {/* Search Bar */}
+            <div className="bg-white border border-slate-200 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/10 flex items-center gap-3 px-4 py-3 rounded-2xl transition-all shadow-xs mb-5">
+                <Search size={18} className="text-slate-400" />
+                <input 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full outline-hidden bg-transparent text-slate-800 text-sm" 
+                    type="text" 
+                    placeholder="Search scans by name..." 
+                />
+            </div>
+
+            {/* Filter Pills */}
+            <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-none">
+                {['all', 'safe', 'caution', 'avoid'].map((type) => (
+                    <button
+                        key={type}
+                        onClick={() => setFilterVerdict(type)}
+                        className={`text-xs font-bold px-4.5 py-2.5 rounded-full transition-all shrink-0 border capitalize cursor-pointer ${
+                            filterVerdict === type
+                                ? 'bg-slate-800 text-white border-slate-800 shadow-sm'
+                                : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
+                        }`}
+                    >
+                        {type === 'all' ? 'All Scans' : type}
+                    </button>
+                ))}
+            </div>
+
+            {/* History List */}
+            <div className="space-y-3 mt-2">
+                {isLoading && (
+                    <div className="flex items-center justify-center py-12 text-slate-400 gap-2">
+                        <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-sm font-semibold">Loading history...</span>
                     </div>
-                </div>}
+                )}
 
-            </div>
-            {/* Related to database buttons (Does not do anything) */}
-            <div className='flex gap-3 mt-4'>
-                <button className='p-3 bg-(--surface) rounded-lg'>Save to History</button>
-                <button className='p-3 bg-(--safe) rounded-lg'>Find Alternatives</button>
+                {!isLoading && filteredScans.length === 0 && (
+                    <div className="text-center py-12 bg-white border border-dashed border-slate-200 rounded-3xl p-6">
+                        <Info size={32} className="text-slate-300 mx-auto mb-2" />
+                        <p className="text-slate-400 text-sm font-semibold">No matching scans found.</p>
+                        <p className="text-xs text-slate-400 mt-1">Try resetting filters or start a new scan.</p>
+                    </div>
+                )}
+
+                {!isLoading && filteredScans.map((scan) => (
+                    <div 
+                        key={scan.id}
+                        onClick={() => navigate('/results', { state: { analysis: scan } })}
+                        className="flex items-center justify-between bg-white border border-slate-100 p-4.5 rounded-2xl shadow-xs hover:border-slate-200 hover:shadow-xs transition-all cursor-pointer group"
+                    >
+                        <div className="flex-1 min-w-0 pr-3">
+                            <h3 className="font-bold text-slate-800 text-sm truncate group-hover:text-emerald-700 transition-colors">
+                                {scan.productName}
+                            </h3>
+                            <div className="flex items-center gap-1 text-[11px] text-slate-400 font-medium mt-1">
+                                <Calendar size={12} />
+                                <span>{timeAgo(scan.timestamp)}</span>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 shrink-0">
+                            <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${verdictClass[scan.verdict]}`}>
+                                {verdictLabel[scan.verdict]}
+                            </span>
+                            <button 
+                                onClick={(e) => handleDelete(e, scan.id)}
+                                className="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                                title="Delete scan"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                            <ChevronRight size={16} className="text-slate-300 group-hover:text-slate-400 transition-all" />
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     )

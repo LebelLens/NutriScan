@@ -5,7 +5,7 @@ import PreviousSearched from '../Components/PreviousSearched'
 
 const History = () => {
   return (
-    <div>
+    <div className="relative min-h-screen flex flex-col pb-16">
       <Navbar/>
       <PreviousSearched/>
       <Footer open={'history'}/>

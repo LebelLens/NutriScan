@@ -59,6 +59,7 @@ export const updateUserProfile = async (updates) => {
 export const saveScan = async (scanData) => {
   try {
     const scan = {
+      timestamp: Date.now(),
       ...scanData,
     };
     const id = await db.scans.add(scan);
