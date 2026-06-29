@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const ensureAuthenticated = require("../middleware/auth.js");
+const { initOcrEngine, getOcrEngine, cleanImageForOcr, cleanLineText } = require('../utils/ocrService.js');
 
 const OCR_ENDPOINT = process.env.AZURE_OCR_ENDPOINT;
 const OCR_API_KEY = process.env.AZURE_OCR_API_KEY;
@@ -26,32 +27,54 @@ async function pollResult(url, headers, timeout = 20000, interval = 1000) {
 router.post("/ocr", ensureAuthenticated, async (req, res) => {
   try {
     const buffer = req.body;
-    const response = await fetch(`${OCR_ENDPOINT}/vision/v3.2/read/analyze`, {
-      method: 'POST',
-      headers: {
-        'Ocp-Apim-Subscription-Key': OCR_API_KEY,
-        'Content-Type': 'application/octet-stream'
-      },
-      body: buffer,
-    })
-    if (!response.ok) {
-      return res.status(response.status).json({ error: "Some Error Occurred" })
-    }
-    const operationLocation = response.headers.get("operation-location")
-    if (!operationLocation) {
-      return res.status(500).json({ error: 'Missing operation-location header from Azure' })
+
+    // Defensive check: prevent the engine from crashing on empty payloads
+    if (!buffer || buffer.length === 0) {
+      return res.status(400).json({ error: "Empty image buffer received." });
     }
 
-    const result = await pollResult(operationLocation, {
-      'Ocp-Apim-Subscription-Key': OCR_API_KEY
-    })
-    return res.json(result)
+    const arrayBuffer = buffer.buffer.slice(
+        buffer.byteOffset,
+        buffer.byteOffset + buffer.byteLength
+    );
+
+    // Clean, auto-rotate, and sharpen the image
+    const cleanedBuffer = await cleanImageForOcr(arrayBuffer);
+    const cleanedArrayBuffer = cleanedBuffer.buffer.slice(
+        cleanedBuffer.byteOffset,
+        cleanedBuffer.byteOffset + cleanedBuffer.byteLength
+    );
+
+    // Initialize local OCR engine (V6 Medium model, per-box strategy, 2048px side length)
+    await initOcrEngine();
+    const ocrEngine = getOcrEngine(); 
+    
+    // Feed the memory block directly to the ONNX runtime
+    const result = await ocrEngine.recognize(cleanedArrayBuffer);
+
+    // Map the grouped lines to Azure format
+    const lines = result.lines.map(lineGroup => {
+      const lineText = lineGroup.map(wordResult => wordResult.text).join(' ');
+      const cleanedText = cleanLineText(lineText);
+      return { text: cleanedText };
+    }).filter(line => line.text.length > 0);
+
+    return res.json({
+      analyzeResult: {
+        readResults: [
+          {
+            lines: lines
+          }
+        ]
+      }
+    });
   } catch (error) {
-    console.error(error.message)
-    return res.status(500).json({ error: "Internal Server Error" })
+    console.error("Local OCR failed to process the buffer:", error);
+    return res.status(500).json({ 
+        error: error.message || 'OCR processing failed' 
+    });
   }
-
-})
+});
 
 router.post("/analyze", ensureAuthenticated, async (req, res) => {
   try {
