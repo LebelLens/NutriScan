@@ -1,6 +1,6 @@
 const apiUrl=import.meta.env.VITE_API_URL || "http://localhost:5000"
 
-export const analyzeIngredientsWithAzure = async (ingredientText, userProfile) => {
+export const analyzeIngredientsWithGroq = async (ingredientText, userProfile) => {
   try {
     const response = await fetch(`${apiUrl}/api/ai/analyze`, {
       method: 'POST',
@@ -13,8 +13,8 @@ export const analyzeIngredientsWithAzure = async (ingredientText, userProfile) =
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Azure OpenAI Error:', errorText);
-      throw new Error(`Azure OpenAI API failed: ${response.status}`);
+      console.error('Groq Error:', errorText);
+      throw new Error(`Groq API failed: ${response.status}`);
     }
 
     const data = await response.json();
@@ -30,11 +30,13 @@ export const analyzeIngredientsWithAzure = async (ingredientText, userProfile) =
     
     const analysis = JSON.parse(cleanText);
     
-    console.log('Azure OpenAI Analysis:', analysis);
+    console.log('Groq Analysis:', analysis);
     return analysis;
 
   } catch (error) {
-    console.error('Azure OpenAI Error:', error);
+    console.error('Groq Error:', error);
     throw new Error('Failed to analyze ingredients');
   }
 };
+
+export default analyzeIngredientsWithGroq;

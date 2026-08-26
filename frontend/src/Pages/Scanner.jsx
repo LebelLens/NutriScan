@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react';
 import {extractTextWithAzure} from '../Services/azureOCR.js'
 import toast from 'react-hot-toast'
 import { getUserProfile, saveScan } from '../Services/db.js';
-import { analyzeIngredientsWithAzure } from '../Services/azureOpenAI.js';
+import { analyzeIngredientsWithGroq } from '../Services/groqAnalyze.js';
 import { useAuthContext } from '../Context/authContext.jsx';
 import useSaveScan from '../Hooks/useSaveScan.js';
 
@@ -51,11 +51,11 @@ const Scanner = () => {
         throw new Error('Please complete your health profile first');
       }
 
-      // Analyze with Groq with openai model
+      // Analyze with Groq's OpenAI-compatible model
       setProcessingStep('Analyzing for your health conditions...');
       setProgress(0);
       
-      const analysis = await analyzeIngredientsWithAzure(
+      const analysis = await analyzeIngredientsWithGroq(
         extractedText,
         userProfile
       );  
@@ -143,7 +143,7 @@ const Scanner = () => {
               Analyzing Ingredients
             </h2>
             <p className="text-xs text-slate-400 leading-relaxed px-4">
-              Reading ingredients lists with Azure AI and verifying safety preferences.
+              Reading ingredients lists and verifying safety preferences.
             </p>
           </div>
 
