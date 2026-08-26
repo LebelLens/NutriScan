@@ -1,12 +1,15 @@
 const express = require('express')
 const router = express.Router()
 const ensureAuthenticated = require("../middleware/auth.js");
+const Groq = require('groq-sdk')
 
 const OCR_ENDPOINT = process.env.AZURE_OCR_ENDPOINT;
 const OCR_API_KEY = process.env.AZURE_OCR_API_KEY;
-const AZURE_OPENAI_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT;
-const AZURE_OPENAI_KEY = process.env.AZURE_OPENAI_KEY;
-const AZURE_OPENAI_DEPLOYMENT = process.env.AZURE_OPENAI_DEPLOYMENT;
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
+
+const groq = new Groq({
+  apiKey: GROQ_API_KEY
+});
 
 async function pollResult(url, headers, timeout = 20000, interval = 1000) {
   const start = Date.now()
@@ -60,8 +63,8 @@ router.post("/analyze", ensureAuthenticated, async (req, res) => {
       return res.status(400).json({ error: 'ingredientText is required' });
     }
 
-    if (!AZURE_OPENAI_ENDPOINT || !AZURE_OPENAI_KEY || !AZURE_OPENAI_DEPLOYMENT) {
-      return res.status(500).json({ error: 'Azure OpenAI not configured on server' });
+    if (!GROQ_API_KEY) {
+      return res.status(500).json({ error: 'Groq api key is not configured on server' });
     }
 
     const conditions = userProfile.conditions?.join(",") || 'None';
@@ -142,33 +145,14 @@ router.post("/analyze", ensureAuthenticated, async (req, res) => {
       }`
     };
 
-    const body = {
-      model: 'gpt-4o-mini',
+    const aiRes = await groq.chat.completions.create({
+      model: 'openai/gpt-oss-20b',
       messages: [systemMessage, userMessage],
-      max_tokens: 800,
       temperature: 0,
-      response_format: { type: "json_object" }
-    };
+      response_format: { type: 'json_object' }
+    })
 
-    const azureUrl = `${AZURE_OPENAI_ENDPOINT}/chat/completions`;
-
-    const aiRes = await fetch(azureUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${AZURE_OPENAI_KEY}`
-      },
-      body: JSON.stringify(body)
-    });
-
-    if (!aiRes.ok) {
-      const text = await aiRes.text();
-      return res.status(aiRes.status).json({ error: text || 'Azure OpenAI request failed' });
-    }
-
-    const aiJson = await aiRes.json();
-    console.log(aiJson);
-    return res.json(aiJson);
+    return res.json(aiRes);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: err.message || 'Internal Server Error' });

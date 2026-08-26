@@ -51,7 +51,7 @@ const Scanner = () => {
         throw new Error('Please complete your health profile first');
       }
 
-      // Analyze with Azure OpenAI
+      // Analyze with Groq with openai model
       setProcessingStep('Analyzing for your health conditions...');
       setProgress(0);
       
