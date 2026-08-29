@@ -4,16 +4,15 @@ import '../index.css'
 import { useNavigate } from 'react-router-dom'
 import { getScanHistory, getScansByVerdict, getScansCount } from '../Services/db'
 import { timeAgo } from '../utils/timeConverter.js'
-import useGetScan from '../Hooks/useGetScan.js'
 import { useAuthContext } from '../Context/authContext.jsx'
 
 const Scan = () => {
     const navigate = useNavigate()
     const { authUser } = useAuthContext()
-    const { getScan, isLoadingScans } = useGetScan()
     const [history, setHistory] = useState([])
     const [totalItems, setTotalItems] = useState(0)
     const [safeItems, setSafeItems] = useState(0)
+    const [isLoadingScans, setIsLoadingScans] = useState(false)
 
     const icons = {
         'avoid': <XCircle size={18} className="text-rose-500 fill-rose-500/10" />,
@@ -35,13 +34,16 @@ const Scan = () => {
 
     useEffect(() => {
         async function f() {
-            await getScan();
-            const h = await getScanHistory(3);
-            setHistory(h)
-            const total = await getScansCount();
-            setTotalItems(total)
-            const safe = await getScansByVerdict('safe')
-            setSafeItems(safe.length)
+            setIsLoadingScans(true);
+            setTimeout(async () => {
+                const h = await getScanHistory(3);
+                setHistory(h)
+                const total = await getScansCount();
+                setTotalItems(total)
+                const safe = await getScansByVerdict('safe')
+                setSafeItems(safe.length)
+                setIsLoadingScans(false);
+            }, 500);
         }
         f()
     }, [])

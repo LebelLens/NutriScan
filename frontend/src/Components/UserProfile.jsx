@@ -1,8 +1,9 @@
 import { User, PlusIcon, X, Check, ShieldAlert, Award, Calendar } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { useGetUserProfile, useUpdateUserProfile, useSaveUserProfile } from '../Hooks/useUserProfile'
+import { useUpdateUserProfile, useSaveUserProfile } from '../Hooks/useUserProfile'
 import toast from 'react-hot-toast';
 import { useAuthContext } from '../Context/authContext';
+import { getUserProfile } from '../Services/db';
 
 // function to convert time to moment
 function timeAgo(dateString) {
@@ -33,7 +34,7 @@ function timeAgo(dateString) {
 
 const UserProfile = () => {
   const { authUser } = useAuthContext();
-  const { isLoadingGet, getUserProfile } = useGetUserProfile()
+  // const { isLoadingGet } = useGetUserProfile()
   const { isLoadingUpdate, updateUserProfile } = useUpdateUserProfile()
   const { saveToDB } = useSaveUserProfile()
 
@@ -41,11 +42,12 @@ const UserProfile = () => {
   const [extraConditions, setExtraConditions] = useState([])
   const [extraAllergies, setExtraAllergies] = useState([])
 
-  // fetching userProfile from db
+  // fetching userProfile from indexedDB
   useEffect(() => {
     async function f() {
       const data = await getUserProfile();
       setProfile(data)
+      console.log(profile)
     }
     f()
   }, [])
@@ -55,28 +57,28 @@ const UserProfile = () => {
     const filteredConditions = extraConditions.filter(c => c.trim() !== '')
     const filteredAllergies = extraAllergies.filter(a => a.trim() !== '')
 
-    if (Object.keys(profile).length === 0) {
+    if (Object.keys(profile).length===0) {
       let newProfile = await saveToDB(filteredConditions, filteredAllergies)
       if (newProfile) {
-        setProfile([newProfile])
+        setProfile(newProfile)
         toast.success("Updated Successfully")
         setExtraAllergies([])
         setExtraConditions([])
       }
       return;
     }
-    const newConditions = [...(profile[0]?.healthCondition || []), ...filteredConditions];
-    const newAllergies = [...(profile[0]?.allergy || []), ...filteredAllergies]
+    const newConditions = [...(profile?.conditions || []), ...filteredConditions];
+    const newAllergies = [...(profile?.allergies || []), ...filteredAllergies]
     const newProfile = await updateUserProfile(newConditions, newAllergies)
     if (newProfile) {
-      setProfile([newProfile])
+      setProfile(newProfile)
       toast.success("Updated Successfully")
       setExtraAllergies([])
       setExtraConditions([])
     }
   }
 
-  if (isLoadingGet || isLoadingUpdate) {
+  if (isLoadingUpdate) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 py-12 text-slate-400 gap-2">
         <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
@@ -85,7 +87,7 @@ const UserProfile = () => {
     )
   }
 
-  const userProfileData = profile[0] || {};
+  const userProfileData = profile || {};
 
   return (
     <div className="flex-1 overflow-y-auto px-5 pt-4 pb-28 bg-slate-50">
@@ -100,11 +102,11 @@ const UserProfile = () => {
             <User size={30} className="text-white fill-white/15" />
           </div>
           <div>
-            <h2 className="text-lg font-black tracking-tight">{authUser?.name || 'Healthy Eater'}</h2>
-            <p className="text-xs text-emerald-100/70">{authUser?.email}</p>
+            <h2 className="text-lg font-black tracking-tight">{userProfileData?.name || 'Healthy Eater'}</h2>
+            <p className="text-xs text-emerald-100/70">{userProfileData?.email}</p>
             <div className="flex items-center gap-1 text-[10px] text-emerald-100/80 font-bold mt-1.5 bg-emerald-800/30 px-2.5 py-0.5 rounded-full inline-flex">
               <Calendar size={10} />
-              <span>Profile updated {timeAgo(userProfileData.updatedAt)}</span>
+              <span>Profile updated {timeAgo(userProfileData.createdAt)}</span>
             </div>
           </div>
         </div>
@@ -126,7 +128,7 @@ const UserProfile = () => {
               </p>
             )}
             
-            {userProfileData.healthCondition?.map((c, i) => (
+            {userProfileData.conditions?.map((c, i) => (
               <div key={i} className="flex gap-3 bg-emerald-50/50 border border-emerald-100 rounded-2xl p-4 items-center justify-between shadow-xxs">
                 <div className="flex items-center gap-2.5">
                   <div className="w-5.5 h-5.5 bg-emerald-550/10 text-emerald-600 rounded-full flex items-center justify-center">
@@ -187,7 +189,7 @@ const UserProfile = () => {
             )}
 
             <div className="flex flex-wrap gap-2">
-              {userProfileData.allergy?.map((a, i) => (
+              {userProfileData.allergies?.map((a, i) => (
                 <span 
                   key={i} 
                   className="inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-2xl bg-rose-50 border border-rose-100 text-rose-700 text-xs font-extrabold shadow-xxs"

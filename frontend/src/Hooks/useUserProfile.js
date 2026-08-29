@@ -53,6 +53,7 @@ export const useSaveUserProfile = () => {
 
 export const useGetUserProfile=()=>{
     const [isLoadingGet, setIsLoadingGet] = useState(false)
+    const {authUser} = useAuthContext();
 
     const getUserProfile = async ()=>{
         setIsLoadingGet(true)
@@ -65,6 +66,14 @@ export const useGetUserProfile=()=>{
             if(data.error){
                 throw new Error(data.error)
             }
+            // console.log(data)
+            await saveUserProfile({
+                name: authUser.name,
+                email: authUser.email,
+                conditions: data[0]?.healthCondition,
+                allergies: data[0]?.allergy,
+                createdAt: data[0].updatedAt,
+            })
             return data;
         } catch (error) {
             toast.error(error.message)
@@ -78,6 +87,7 @@ export const useGetUserProfile=()=>{
 
 export const useUpdateUserProfile=()=>{
     const [isLoadingUpdate, setisLoadingUpdate] = useState(false)
+    const {authUser} = useAuthContext()
 
     const updateUserProfile =async (newHealthConditions, newAllergies)=>{
         setisLoadingUpdate(true)
@@ -92,6 +102,14 @@ export const useUpdateUserProfile=()=>{
             if(data.error){
                 throw new Error(data.error)
             } 
+            console.log(data)
+            await saveUserProfile({
+                name: authUser?.name,
+                email: authUser?.email,
+                conditions: newHealthConditions,
+                allergies: newAllergies,
+                createdAt: data?.updatedAt,
+            })
             return data;
         } catch (error) {
             toast.error(error.message)

@@ -3,6 +3,7 @@ import '../index.css'
 import toast from 'react-hot-toast'
 import { useAuthContext } from '../Context/authContext'
 import { LogOut } from 'lucide-react'
+import { db } from '../Services/db'
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
@@ -19,6 +20,8 @@ const Navbar = () => {
       if(res.ok){
         localStorage.removeItem("NutriScan")
         setAuthUser(null)
+        await db.scans.clear();
+        await db.userProfile.clear();
       }      
     } catch (error) {
       toast.error("Error while logout")

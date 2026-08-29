@@ -20,7 +20,6 @@ export const saveUserProfile = async (profile) => {
     return await db.userProfile.put({
       id: 1, 
       ...profile,
-      updatedAt: Date.now()
     });
   } catch (error) {
     toast.error('Error saving user profile:', error);

@@ -15,15 +15,21 @@ import { useAuthContext } from './Context/authContext'
 import { saveUserProfile } from './Services/db'
 import useGetUser from './Hooks/useGetUser'
 import PWABadge from './PWABadge'
+import useGetScan from './Hooks/useGetScan'
+import { useGetUserProfile } from './Hooks/useUserProfile'
 
 const App = () => {
   const {authUser, isCheckingAuth} = useAuthContext()
   const {getUser} = useGetUser()
+  const {getScan, isLoadingScans} = useGetScan();
+  const {getUserProfile, isLoadingGet} = useGetUserProfile();
 
   useEffect(() => {
     // Checking if user is logged in or not
     async function f(){
       await getUser()
+      await getScan();
+      await getUserProfile();
     }
     f();
   }, [])
@@ -34,7 +40,7 @@ const App = () => {
     }
   },[authUser])
 
-  if(isCheckingAuth){
+  if(isCheckingAuth || isLoadingScans || isLoadingGet){
     return <div className='loading-spinner app-viewport'>
       <div class="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500"></div>
       Loading...

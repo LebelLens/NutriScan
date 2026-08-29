@@ -10,7 +10,7 @@ const PreviousSearched = () => {
     const [scans, setScans] = useState([])
     const [searchQuery, setSearchQuery] = useState('')
     const [filterVerdict, setFilterVerdict] = useState('all')
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
 
     const icons = {
         'avoid': <XCircle size={18} className="text-rose-500 fill-rose-500/10" />,
@@ -35,14 +35,15 @@ const PreviousSearched = () => {
     }, [])
 
     const loadHistory = async () => {
-        setIsLoading(true)
         try {
-            const history = await getScanHistory(50)
-            setScans(history)
+            setIsLoading(true)
+            setTimeout(async () => {
+                const history = await getScanHistory(50)
+                setScans(history)
+                setIsLoading(false)
+            }, 500);
         } catch (error) {
             console.error(error)
-        } finally {
-            setIsLoading(false)
         }
     }
 
