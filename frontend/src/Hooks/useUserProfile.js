@@ -40,7 +40,15 @@ export const useSaveUserProfile = () => {
         if(data.error){
             throw new Error(data.error)
         }
-        return data;
+        const newProfile = {
+            name: authUser?.name,
+            email: authUser?.email,
+            conditions: selectedCondition,
+            allergies: selectedAllergies,
+            createdAt: data?.updatedAt || data?.createdAt,
+        };
+        await saveUserProfile(newProfile);
+        return newProfile;
     } catch (error) {
         toast.error(error.message)
     } finally {
@@ -103,14 +111,15 @@ export const useUpdateUserProfile=()=>{
                 throw new Error(data.error)
             } 
             console.log(data)
-            await saveUserProfile({
+            const updatedProfile = {
                 name: authUser?.name,
                 email: authUser?.email,
                 conditions: newHealthConditions,
                 allergies: newAllergies,
                 createdAt: data?.updatedAt,
-            })
-            return data;
+            };
+            await saveUserProfile(updatedProfile);
+            return updatedProfile;
         } catch (error) {
             toast.error(error.message)
         } finally{

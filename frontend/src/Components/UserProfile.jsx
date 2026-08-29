@@ -122,7 +122,7 @@ const UserProfile = () => {
 
           <div className="flex flex-col gap-2.5">
             {/* Existing conditions */}
-            {userProfileData.healthCondition?.length === 0 && extraConditions.length === 0 && (
+            {(!userProfileData.conditions || userProfileData.conditions.length === 0) && extraConditions.length === 0 && (
               <p className="text-xs font-semibold text-slate-450 italic bg-white p-4 rounded-2xl border border-slate-100 text-center">
                 No health conditions selected.
               </p>
@@ -182,7 +182,7 @@ const UserProfile = () => {
 
           <div className="flex flex-col gap-2.5">
             {/* Existing allergies */}
-            {userProfileData.allergy?.length === 0 && extraAllergies.length === 0 && (
+            {(!userProfileData.allergies || userProfileData.allergies.length === 0) && extraAllergies.length === 0 && (
               <p className="text-xs font-semibold text-slate-450 italic bg-white p-4 rounded-2xl border border-slate-100 text-center">
                 No food allergies specified.
               </p>
