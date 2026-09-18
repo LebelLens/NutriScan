@@ -84,7 +84,7 @@ export const useGetUserProfile=()=>{
             })
             return data;
         } catch (error) {
-            toast.error(error.message)
+            console.error(error.message)
         } finally {
             setIsLoadingGet(false)
         }
