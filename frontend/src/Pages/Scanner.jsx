@@ -60,16 +60,6 @@ const Scanner = () => {
         userProfile
       );  
     
-      // Save in IndexedDB
-      await saveScan({
-        productName: analysis.productName,
-        flaggedIngredients: analysis.flaggedIngredients,
-        positiveHighlights: analysis.positiveHighlights,
-        verdict: analysis.verdict,
-        riskLevel: analysis.riskLevel,
-        summary: analysis.summary,
-      });
-
       const mappedIngredients = Array.isArray(analysis.flaggedIngredients) 
           ? analysis.flaggedIngredients.map((item)=>({
             name: item.name || 'Unknown',
